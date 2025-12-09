@@ -142,19 +142,13 @@ public class ChatterboxClient {
         String PASSWORD = args[3];
 
         // Variable to store parsed string
-        int parsedPort;
+        int parsedPort = Integer.parseInt(PORT);
 
-        // Try catch, trys to first parse the PORT, if its not within the if statments requirements throw the IllegalArgumentException
-        try {
-            parsedPort = Integer.parseInt(PORT);
-            if (!(parsedPort >= 1 && parsedPort <= 65535)) {
-                throw new IllegalArgumentException("Invaild Port, must be between 1..65535");
-            }
+        // Check to see if the port is valid, between 1..65535
+        if (!(parsedPort >= 1 && parsedPort <= 65535)) {
+            throw new IllegalArgumentException("Invaild Port, must be between 1..65535");
         }
-        // Catch, this catches the NumberFormatException which is basically anything that is not a number string for example "Hello"
-        catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Not a parseable number: " + e);
-        }
+       
 
         // Finally return new ChatterboxOptions(host, port, username, password)
         return new ChatterboxOptions(HOST, parsedPort, USERNAME, PASSWORD);
@@ -199,21 +193,22 @@ public class ChatterboxClient {
     public void connect() throws IOException {
         // Make sure to have this.serverReader and this.serverWriter set by the end of this method!
         // hint: get the streams from the sockets, use those to create the InputStreamReader/OutputStreamWriter and the BufferedReader/BufferedWriter
-        try(Socket socket = new Socket(host, port)) {
-            // InputStream(Raw bytes) -> InputStreamReader(decodes bytes to chars) -> BufferedReader(reading groups of chars, provides methods)
-            InputStream inputStream = socket.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            this.serverReader = bufferedReader;
 
-            // OutputStream <-(bytes) OutputStreamWriter <-(chars) BufferedWriter
-            OutputStream outputStream = socket.getOutputStream();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
-            BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-            this.serverWriter = bufferedWriter;
-        } catch(IOException e){
-            throw new IOException("Socket cannot be opened: " + e);
-        }
+        //Create the socket
+        Socket socket = new Socket(host, port);
+
+        // InputStream(Raw bytes) -> InputStreamReader(decodes bytes to chars) -> BufferedReader(reading groups of chars, provides methods)
+        InputStream inputStream = socket.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        this.serverReader = bufferedReader;
+
+        // OutputStream (chars) -> OutputStreamWriter (bytes) -> BufferedWriter
+        OutputStream outputStream = socket.getOutputStream();
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+        this.serverWriter = bufferedWriter;
+      
    
     }
 
@@ -238,9 +233,23 @@ public class ChatterboxClient {
      * @throws IllegalArgumentException for bad credentials / server rejection
      */
     public void authenticate() throws IOException, IllegalArgumentException {
-        throw new UnsupportedOperationException("Authenticate not yet implemented. Implement authenticate() and remove this exception!");
+        // throw new UnsupportedOperationException("Authenticate not yet implemented. Implement authenticate() and remove this exception!");
         // Hint: use the username/password instance variables, DO NOT READ FROM userInput
         // send messages using serverWriter (don't forget to flush!)
+        OutputStream outputStream = userOutput;
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+        
+     
+        String response = serverReader.readLine();
+        bufferedWriter.write(response + "\n");
+        bufferedWriter.flush();
+
+        serverWriter.write(username + " " + password + "\n");
+        serverWriter.flush();
+        
+         
     }
 
     /**
