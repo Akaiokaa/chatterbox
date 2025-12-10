@@ -142,13 +142,20 @@ public class ChatterboxClient {
         String PASSWORD = args[3];
 
         // Variable to store parsed string
-        int parsedPort = Integer.parseInt(PORT);
+        int parsedPort;
 
-        // Check to see if the port is valid, between 1..65535
-        if (!(parsedPort >= 1 && parsedPort <= 65535)) {
-            throw new IllegalArgumentException("Invaild Port, must be between 1..65535");
+        try {
+            // Initizlize parsedPort by converting it into a INT
+            parsedPort = Integer.parseInt(PORT);
+
+            // Check to see if the port is valid, between 1..65535
+            if (!(parsedPort >= 1 && parsedPort <= 65535)) {
+                throw new IllegalArgumentException("Invaild Port, must be between 1..65535");
+            }
+            
+        } catch (NumberFormatException e){
+            throw new IllegalArgumentException("Not a vaild parseable number: " + e);
         }
-       
 
         // Finally return new ChatterboxOptions(host, port, username, password)
         return new ChatterboxOptions(HOST, parsedPort, USERNAME, PASSWORD);
