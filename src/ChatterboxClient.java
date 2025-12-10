@@ -247,14 +247,14 @@ public class ChatterboxClient {
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 
-        
+        serverWriter.write(username + " " + password + "\n");
+        serverWriter.flush();
      
         String response = serverReader.readLine();
         bufferedWriter.write(response + "\n");
         bufferedWriter.flush();
 
-        serverWriter.write(username + " " + password + "\n");
-        serverWriter.flush();
+       
         
          
     }
