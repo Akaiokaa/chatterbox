@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+import javax.imageio.IIOException;
+
 /**
  * A simple command-line chat client for the Chatterbox server.
  *
@@ -268,13 +270,10 @@ public class ChatterboxClient {
         if (!response.toLowerCase().contains("welcome")) {
             throw new IllegalArgumentException("server rejection");
         }
-        
-        if (response != null) {
-            outputWriter.write(response);
-            outputWriter.newLine();
-            outputWriter.flush();
-        }
-        
+
+        outputWriter.write(response);
+        outputWriter.newLine();
+        outputWriter.flush();
          
     }
 
@@ -291,7 +290,7 @@ public class ChatterboxClient {
      * @throws IOException
      */
     public void streamChat() throws IOException {
-        throw new UnsupportedOperationException("Chat streaming not yet implemented. Implement streamChat() and remove this exception!");
+        printIncomingChats();
     }
 
     /**
@@ -310,7 +309,31 @@ public class ChatterboxClient {
      */
     public void printIncomingChats() {
         // Listen on serverReader
-        // Write to userOutput, NOT System.out
+        // Write to userOutput, NOT System.
+        OutputStream outputStream = userOutput;
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
+        BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+        String line;
+        try{
+            while((line = serverReader.readLine())!= null){
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
+            bufferedWriter.write("server disconnected");
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+            System.exit(1);
+        } catch (IOException e) {
+            try{
+                bufferedWriter.write("server disconnected");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch(IOException Ignore) {}
+            
+            System.exit(1);
+        }
     }
 
     /**
