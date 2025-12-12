@@ -212,7 +212,7 @@ public class ChatterboxClient {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         this.serverReader = bufferedReader;
 
-        // OutputStream (Raw bytes) -> OutputStreamWriter (decodes bytes to chars) -> BufferedWriter(reading groups of chars, provides methods)
+        // OutputStream (Raw bytes) -> OutputStreamWriter (encodes characters into bytes) -> BufferedWriter(Sends full lines at a time)
         OutputStream outputStream = socket.getOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, java.nio.charset.StandardCharsets.UTF_8);
         BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
